@@ -1,0 +1,1139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#04151a">
+<style>html,body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>ELYSVORA</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="ELYSVORA Soul Pass: mint a soulbound pass on HyperEVM with $KNTQ and earn your place in the ELYSVORA mint on Elysium.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a night-garden scroll. Hero astrolabe, then a narrow reading column with wide tier band; app view is a profile rail + pass column. */
+:root {
+  --abyss: #04151a;
+  --deep: #07222a;
+  --panel: #0b2b33;
+  --panel-2: #0f3640;
+  --line: rgba(160, 230, 210, 0.16);
+  --line-2: rgba(160, 230, 210, 0.32);
+  --mist: #dcefe8;
+  --muted: #94b9b0;
+  --dim: #5f857d;
+  --lumen: #8ff0d0;
+  --pearl: #b9c8ff;
+  --ember: #f2c879;
+  --ok: #8ff0b4;
+  --bad: #ff8f8f;
+  --display: "Marcellus", "Cinzel", Georgia, serif;
+  --body: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 14px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--abyss);
+  color: var(--mist);
+  font: 16px/1.6 var(--body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--abyss); }
+a { color: var(--lumen); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--lumen); outline-offset: 3px; border-radius: 6px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; letter-spacing: 0.02em; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.wrap { width: 100%; max-width: 1140px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid transparent; border-radius: 999px; padding: 13px 24px; font-weight: 600; font-size: 15px; cursor: pointer; transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; text-decoration: none; white-space: nowrap; }
+.btn:hover { text-decoration: none; transform: translateY(-1px); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.btn.primary { background: var(--lumen); color: #032019; box-shadow: 0 0 0 1px rgba(143, 240, 208, 0.4), 0 10px 40px -12px rgba(143, 240, 208, 0.7); }
+.btn.ghost { background: transparent; border-color: var(--line-2); color: var(--mist); }
+.btn.ghost:hover { border-color: var(--lumen); }
+.btn.small { padding: 8px 14px; font-size: 13px; }
+.btn.gold { background: var(--ember); color: #2a1a00; }
+.btn.pearl { background: var(--pearl); color: #0b1440; }
+
+/* top bar */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: rgba(4, 21, 26, 0.82); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 22px; height: 64px; }
+.mark { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-size: 21px; letter-spacing: 0.32em; color: var(--mist); }
+.mark:hover { text-decoration: none; }
+.mark canvas { width: 30px; height: 30px; }
+.nav { display: flex; gap: 22px; margin-left: auto; }
+.nav a { color: var(--muted); font-size: 14px; }
+.nav a:hover { color: var(--mist); text-decoration: none; }
+.top .btn { margin-left: 8px; }
+@media (max-width: 820px) { .nav { display: none; } .top .btn { margin-left: auto; } .mark { font-size: 17px; letter-spacing: 0.24em; } }
+
+/* hero */
+.hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); }
+.hero canvas.sky { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero .wrap { position: relative; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; padding-block: 72px 64px; }
+.hero h1 { font-size: clamp(42px, 6.4vw, 80px); line-height: 1.02; }
+.hero h1 em { font-style: normal; color: var(--lumen); }
+.hero .lead { margin-top: 20px; max-width: 34em; color: var(--muted); font-size: 18px; }
+.hero .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.facts { margin-top: 40px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: var(--r); background: rgba(7, 34, 42, 0.6); }
+.facts div { padding: 14px 16px; border-left: 1px solid var(--line); min-width: 0; }
+.facts div:first-child { border-left: 0; }
+.facts span { display: block; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim); }
+.facts b { display: block; margin-top: 4px; font-weight: 600; font-size: 15px; }
+.orb { position: relative; aspect-ratio: 1; max-width: 100%; width: min(460px, 100%); justify-self: center; }
+.orb canvas { width: 100%; height: 100%; }
+@media (max-width: 900px) {
+  .hero .wrap { grid-template-columns: 1fr; padding-block: 44px 40px; }
+  .orb { width: min(320px, 82%); order: -1; }
+  .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .facts div:nth-child(3) { border-left: 0; }
+  .facts div:nth-child(n+3) { border-top: 1px solid var(--line); }
+}
+
+section.band { padding-block: 84px; border-bottom: 1px solid var(--line); }
+.head { max-width: 40em; margin-bottom: 40px; }
+.head h2 { font-size: clamp(30px, 4vw, 46px); margin-top: 10px; }
+.head p { margin-top: 14px; color: var(--muted); }
+
+/* path */
+.path { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--line-2); }
+.path li { position: relative; padding: 22px 18px 0 0; min-width: 0; }
+.path li::before { content: ""; position: absolute; top: -5px; left: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--abyss); border: 1px solid var(--lumen); }
+.path li.now::before { background: var(--lumen); box-shadow: 0 0 14px var(--lumen); }
+.path .n { font-family: var(--mono); font-size: 12px; color: var(--dim); }
+.path h3 { font-size: 21px; margin-top: 6px; }
+.path p { margin-top: 8px; color: var(--muted); font-size: 14.5px; }
+.path .where { display: inline-block; margin-top: 10px; font-size: 12px; color: var(--lumen); border: 1px solid var(--line-2); border-radius: 999px; padding: 2px 10px; }
+@media (max-width: 900px) { .path { grid-template-columns: 1fr; border-top: 0; border-left: 1px solid var(--line-2); } .path li { padding: 0 0 26px 24px; } .path li::before { top: 6px; left: -5px; } }
+
+/* tiers */
+.tiers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.tier { --t: var(--lumen); position: relative; border: 1px solid var(--line); border-radius: 22px; padding: 26px 24px 24px; background: linear-gradient(180deg, rgba(15, 54, 64, 0.65), rgba(7, 34, 42, 0.4)); display: flex; flex-direction: column; min-width: 0; }
+.tier.gtd { --t: var(--pearl); }
+.tier.og { --t: var(--ember); border-color: rgba(242, 200, 121, 0.35); }
+.tier canvas { width: 96px; height: 96px; }
+.tier .name { display: flex; align-items: baseline; gap: 10px; margin-top: 14px; }
+.tier .name h3 { font-size: 30px; color: var(--t); }
+.tier .name span { font-size: 13px; color: var(--muted); }
+.tier .sub { margin-top: 6px; color: var(--muted); font-size: 14.5px; }
+.req { list-style: none; margin: 18px 0 0; padding: 16px 0 0; border-top: 1px solid var(--line); display: grid; gap: 9px; font-size: 14.5px; }
+.req li { display: grid; grid-template-columns: 18px 1fr; gap: 8px; align-items: start; }
+.req li::before { content: ""; width: 7px; height: 7px; margin-top: 8px; transform: rotate(45deg); background: var(--t); }
+.req li.plus { color: var(--mist); font-weight: 600; }
+.tier .fee { margin-top: auto; padding-top: 20px; display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
+.tier .fee b { color: var(--mist); font-weight: 600; }
+@media (max-width: 900px) { .tiers { grid-template-columns: 1fr; } }
+
+/* about two-col */
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.note { border: 1px solid var(--line); border-radius: var(--r); padding: 22px; background: rgba(7, 34, 42, 0.5); min-width: 0; }
+.note h3 { font-size: 22px; }
+.note p { margin-top: 10px; color: var(--muted); font-size: 15px; }
+.note dl { margin: 14px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 14px; }
+.note dt { color: var(--dim); }
+.note dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 760px) { .two { grid-template-columns: 1fr; } }
+
+/* timeline */
+.time { display: grid; gap: 0; border-left: 1px solid var(--line-2); margin-left: 6px; }
+.time div { position: relative; padding: 0 0 26px 26px; }
+.time div::before { content: ""; position: absolute; left: -6px; top: 5px; width: 11px; height: 11px; border-radius: 50%; border: 1px solid var(--lumen); background: var(--abyss); }
+.time div.on::before { background: var(--lumen); box-shadow: 0 0 12px var(--lumen); }
+.time b { font-family: var(--mono); font-size: 13px; color: var(--lumen); font-weight: 600; }
+.time h3 { font-size: 20px; margin-top: 2px; }
+.time p { color: var(--muted); font-size: 14.5px; margin-top: 4px; max-width: 44em; }
+
+/* faq */
+.faq { display: grid; gap: 10px; max-width: 820px; }
+.faq details { border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; background: rgba(7, 34, 42, 0.45); }
+.faq summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+.faq summary::after { content: "+"; color: var(--lumen); font-family: var(--mono); }
+.faq details[open] summary::after { content: "-"; }
+.faq p { margin-top: 10px; color: var(--muted); font-size: 15px; }
+
+footer { padding-block: 40px 56px; color: var(--dim); font-size: 13px; }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 28px; justify-content: space-between; }
+
+/* gate */
+.gate { position: fixed; inset: 0; z-index: 50; background: rgba(2, 12, 15, 0.86); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: grid; place-items: center; padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); overflow-y: auto; }
+.gate-card { width: 100%; max-width: 480px; background: var(--deep); border: 1px solid var(--line-2); border-radius: 24px; padding: 28px; box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.7); }
+.gate-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 24px; }
+.gate-steps div { height: 4px; border-radius: 4px; background: var(--line); }
+.gate-steps div.on { background: var(--lumen); }
+.gate-card h2 { font-size: 28px; }
+.gate-card > p { margin-top: 8px; color: var(--muted); font-size: 15px; }
+.gate-close { float: right; background: none; border: 0; color: var(--muted); font-size: 24px; line-height: 1; cursor: pointer; padding: 0 0 0 10px; }
+.wlist { display: grid; gap: 8px; margin-top: 18px; }
+.wopt { display: flex; align-items: center; gap: 12px; width: 100%; padding: 13px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; text-align: left; color: var(--mist); text-decoration: none; }
+.wopt:hover { border-color: var(--lumen); text-decoration: none; }
+.wopt img, .wopt i { width: 30px; height: 30px; border-radius: 8px; flex: none; }
+.wopt i { display: grid; place-items: center; font-style: normal; font-weight: 700; background: var(--panel-2); color: var(--lumen); }
+.wopt span { flex: 1; font-weight: 600; }
+.wopt small { color: var(--dim); font-size: 12px; }
+.gate .hint { margin-top: 16px; font-size: 13px; color: var(--dim); }
+.gate .msg { margin-top: 14px; color: var(--bad); font-size: 14px; min-height: 0; }
+.gate .msg:empty { display: none; }
+.sigbox { margin-top: 18px; padding: 14px; border: 1px dashed var(--line-2); border-radius: 12px; font-family: var(--mono); font-size: 12.5px; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+.xauth { margin-top: 18px; border: 1px solid var(--line-2); border-radius: 16px; overflow: hidden; }
+.xauth .bar { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: #000; color: #fff; font-weight: 700; }
+.xauth .bar b { font-size: 18px; }
+.xauth .body { padding: 16px; background: #0b0b0d; color: #e7e9ea; display: grid; gap: 12px; }
+.xauth .body p { color: #a3a8ad; font-size: 14px; }
+.xauth label { display: grid; gap: 6px; font-size: 13px; color: #a3a8ad; }
+.xauth .in { display: flex; align-items: center; border: 1px solid #333639; border-radius: 8px; background: #000; }
+.xauth .in b { padding: 0 4px 0 12px; color: #71767b; }
+.xauth input { flex: 1; min-width: 0; background: transparent; border: 0; color: #e7e9ea; padding: 12px 12px 12px 0; font: 15px var(--body); outline: none; }
+.xauth .btn { background: #eff3f4; color: #0f1419; border-radius: 999px; }
+.demo-tag { display: inline-block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ember); border: 1px solid rgba(242, 200, 121, 0.4); border-radius: 999px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
+.spin { width: 16px; height: 16px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* app */
+.app { padding-block: 36px 80px; }
+.app .wrap { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 26px; align-items: start; }
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); display: grid; gap: 14px; }
+.profile { border: 1px solid var(--line-2); border-radius: 22px; padding: 22px; background: linear-gradient(180deg, var(--panel), var(--deep)); }
+.ava { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-size: 28px; color: #032019; background: radial-gradient(circle at 30% 30%, #c9fff0, var(--lumen) 60%, #3fb995); box-shadow: 0 0 30px -6px var(--lumen); }
+.profile h2 { font-size: 24px; margin-top: 14px; overflow-wrap: anywhere; }
+.profile .handle { color: var(--muted); font-size: 14px; }
+.kv { display: grid; gap: 10px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14px; }
+.kv div { display: flex; justify-content: space-between; gap: 10px; }
+.kv span { color: var(--dim); }
+.kv b { font-weight: 600; text-align: right; min-width: 0; overflow-wrap: anywhere; }
+.snap { border: 1px solid var(--line); border-radius: 18px; padding: 18px; background: rgba(7, 34, 42, 0.6); }
+.snap .big { font-family: var(--display); font-size: 40px; line-height: 1; margin-top: 8px; color: var(--lumen); }
+.snap p { color: var(--muted); font-size: 13.5px; margin-top: 8px; }
+.democ { border: 1px dashed rgba(242, 200, 121, 0.45); border-radius: 18px; padding: 16px 18px; }
+.democ h3 { font-family: var(--body); font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ember); }
+.democ label { display: grid; gap: 6px; margin-top: 12px; font-size: 13px; color: var(--muted); }
+.democ input[type=range] { width: 100%; accent-color: var(--ember); }
+.democ .row { display: flex; justify-content: space-between; font-size: 13px; }
+.democ .btn { margin-top: 12px; width: 100%; }
+.passes { display: grid; gap: 18px; }
+.invite { border: 1px solid var(--line-2); border-radius: 18px; padding: 18px; background: rgba(7, 34, 42, 0.6); }
+.ilink { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 6px 6px 6px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--abyss); }
+.ilink code { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; color: var(--lumen); }
+.istats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.istats div { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.istats b { display: block; font-size: 24px; font-weight: 600; color: var(--mist); }
+.istats span { font-size: 12px; color: var(--dim); }
+.xdone { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+.xdone::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--t); flex: none; }
+.invited-note { margin-top: 10px; font-size: 13px; color: var(--ember); }
+.welcome h1 { font-size: clamp(28px, 3.6vw, 40px); }
+.welcome p { color: var(--muted); margin-top: 8px; }
+.pass { --t: var(--lumen); border: 1px solid var(--line); border-radius: 22px; background: rgba(7, 34, 42, 0.55); overflow: hidden; }
+.pass.gtd { --t: var(--pearl); }
+.pass.og { --t: var(--ember); }
+.pass-head { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 20px 22px; border-bottom: 1px solid var(--line); }
+.pass-head canvas { width: 76px; height: 76px; }
+.pass-head h3 { font-size: 26px; color: var(--t); }
+.pass-head p { color: var(--muted); font-size: 14px; }
+.chip { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 999px; padding: 5px 11px; border: 1px solid var(--line-2); color: var(--muted); white-space: nowrap; }
+.chip.ready { color: #032019; background: var(--t); border-color: transparent; }
+.chip.minted { color: var(--t); border-color: var(--t); }
+.prog { height: 4px; background: var(--line); }
+.prog i { display: block; height: 100%; width: 0; background: var(--t); transition: width 0.4s ease; }
+.tasks { list-style: none; margin: 0; padding: 8px 22px 6px; }
+.task { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 13px 0; border-bottom: 1px solid var(--line); }
+.task:last-child { border-bottom: 0; }
+.tick { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--line-2); display: grid; place-items: center; }
+.task.done .tick { background: var(--t); border-color: var(--t); }
+.task.done .tick::after { content: ""; width: 9px; height: 5px; border-left: 2px solid #032019; border-bottom: 2px solid #032019; transform: rotate(-45deg) translate(1px, -1px); }
+.task .t1 { font-weight: 600; font-size: 15px; }
+.task .t2 { color: var(--dim); font-size: 13px; overflow-wrap: anywhere; }
+.task .t2.bad { color: var(--bad); }
+.task .acts { display: flex; gap: 8px; align-items: center; }
+.postrow { grid-column: 2 / 4; display: flex; gap: 8px; }
+.postrow input { flex: 1; min-width: 0; background: var(--abyss); border: 1px solid var(--line-2); border-radius: 10px; padding: 9px 12px; color: var(--mist); font: 14px var(--mono); }
+.postrow input:focus { border-color: var(--t); outline: none; }
+.pass-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 22px 20px; background: rgba(4, 21, 26, 0.5); border-top: 1px solid var(--line); }
+.pass-foot .fee { font-size: 13.5px; color: var(--muted); }
+.pass-foot .fee b { color: var(--mist); }
+.pass .minted-box { display: none; padding: 18px 22px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+.pass.is-minted .minted-box { display: block; }
+.pass.is-minted .pass-foot .btn { display: none; }
+@media (max-width: 960px) { .app .wrap { grid-template-columns: 1fr; } .rail { position: static; } }
+@media (max-width: 560px) {
+  .pass-head { grid-template-columns: 56px minmax(0, 1fr); }
+  .pass-head canvas { width: 56px; height: 56px; }
+  .pass-head .chip { grid-column: 1 / -1; justify-self: start; }
+  .task { grid-template-columns: 24px minmax(0, 1fr); }
+  .task .acts { grid-column: 2; }
+  .postrow { grid-column: 1 / -1; }
+}
+
+/* mint sheet */
+.sheet { position: fixed; inset: 0; z-index: 60; background: rgba(2, 12, 15, 0.8); display: grid; place-items: center; padding: 16px; }
+.sheet-card { width: 100%; max-width: 420px; background: var(--deep); border: 1px solid var(--line-2); border-radius: 22px; padding: 24px; text-align: center; }
+.sheet-card canvas { width: 160px; height: 160px; margin: 6px auto 0; display: block; }
+.sheet-card h3 { font-size: 26px; margin-top: 10px; }
+.sheet-card p { color: var(--muted); font-size: 14.5px; margin-top: 8px; }
+.steps { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 8px; text-align: left; }
+.steps li { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border: 1px solid var(--line); border-radius: 12px; font-size: 14px; color: var(--muted); }
+.steps li.on { border-color: var(--lumen); color: var(--mist); }
+.steps li.ok { color: var(--ok); }
+.steps li .ic { width: 18px; display: grid; place-items: center; }
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 70; background: var(--panel-2); border: 1px solid var(--line-2); color: var(--mist); padding: 11px 18px; border-radius: 999px; font-size: 14px; box-shadow: 0 10px 30px -10px #000; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="#top" id="markLink"><canvas id="markSigil" width="60" height="60"></canvas>ELYSVORA</a>
+    <nav class="nav" id="nav">
+      <a href="#path">How it works</a>
+      <a href="#passes">Soul Pass</a>
+      <a href="#elysium">Elysium</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <button class="btn primary small" id="topCta" type="button">Get early access</button>
+  </div>
+</header>
+
+<main id="landing">
+  <section class="hero" id="top">
+    <canvas class="sky" id="sky"></canvas>
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">Soul Pass · HyperEVM</span>
+        <h1>Your soulbound key to <em>Elysium</em>.</h1>
+        <p class="lead">Mint an ELYSVORA Soul Pass on HyperEVM with $KNTQ. Every holder is snapshotted before Elysium mainnet, and the pass you hold decides how you mint the ELYSVORA collection on Elysium.</p>
+        <div class="ctas">
+          <button class="btn primary" id="heroCta" type="button">Get early access</button>
+          <a class="btn ghost" href="#passes">See the three passes</a>
+        </div>
+        <div class="facts">
+          <div><span>Pass network</span><b>HyperEVM</b></div>
+          <div><span>Mint fee</span><b>$0.66 in KNTQ</b></div>
+          <div><span>Elysium mainnet</span><b>Nov 9, 2026</b></div>
+          <div><span>Pass type</span><b>Soulbound</b></div>
+        </div>
+      </div>
+      <div class="orb"><canvas id="orb" width="920" height="920"></canvas></div>
+    </div>
+  </section>
+
+  <section class="band" id="path">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">How it works</span>
+        <h2>From HyperEVM to Elysium in five steps</h2>
+        <p>The Soul Pass lives on HyperEVM today. It cannot be sold or moved, so the snapshot rewards the people who actually joined.</p>
+      </div>
+      <ol class="path">
+        <li class="now"><span class="n">01</span><h3>Enter</h3><p>Connect your wallet and your X account. Your X name becomes your ELYSVORA profile.</p><span class="where">Website</span></li>
+        <li class="now"><span class="n">02</span><h3>Complete tasks</h3><p>Each pass has its own tasks. FCFS is open to everyone. GTD and OG ask for more.</p><span class="where">Website + X</span></li>
+        <li class="now"><span class="n">03</span><h3>Mint your Soul Pass</h3><p>Pay a $0.66 fee in $KNTQ and mint a soulbound pass to your wallet.</p><span class="where">HyperEVM</span></li>
+        <li><span class="n">04</span><h3>Snapshot</h3><p>Every Soul Pass holder is recorded before Elysium mainnet goes live.</p><span class="where">HyperEVM</span></li>
+        <li><span class="n">05</span><h3>Mint ELYSVORA</h3><p>Holders mint the official ELYSVORA NFT on Elysium, with access set by their pass.</p><span class="where">Elysium</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band" id="passes">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Soul Pass</span>
+        <h2>Three passes, three levels of access</h2>
+        <p>Every pass is a soulbound token on HyperEVM. Complete its tasks, then mint it for $0.66 paid in $KNTQ.</p>
+      </div>
+      <div class="tiers">
+        <article class="tier fcfs">
+          <canvas data-sigil="fcfs" width="192" height="192"></canvas>
+          <div class="name"><h3>FCFS</h3><span>First come, first served</span></div>
+          <p class="sub">Open to everyone who joins. Mint spots on Elysium go in order.</p>
+          <ul class="req">
+            <li>Follow ELYSVORA on X</li>
+            <li>Like the pinned post</li>
+            <li>Repost the pinned post</li>
+            <li>Comment on the pinned post</li>
+          </ul>
+          <div class="fee"><span>Mint fee</span><b>$0.66 in KNTQ</b></div>
+        </article>
+        <article class="tier gtd">
+          <canvas data-sigil="gtd" width="192" height="192"></canvas>
+          <div class="name"><h3>GTD</h3><span>Guaranteed</span></div>
+          <p class="sub">A guaranteed ELYSVORA mint on Elysium.</p>
+          <ul class="req">
+            <li>The FCFS X tasks, skipped if you already did them</li>
+            <li class="plus">Hold $30 of $KNTQ on HyperEVM</li>
+            <li class="plus">Invite 3 friends with your link</li>
+            <li class="plus">Post about ELYSVORA and tag @ELYSVORA</li>
+            <li>Submit your post link</li>
+          </ul>
+          <div class="fee"><span>Mint fee</span><b>$0.66 in KNTQ</b></div>
+        </article>
+        <article class="tier og">
+          <canvas data-sigil="og" width="192" height="192"></canvas>
+          <div class="name"><h3>OG</h3><span>The first circle</span></div>
+          <p class="sub">The highest pass, with first access to the ELYSVORA mint on Elysium.</p>
+          <ul class="req">
+            <li>The FCFS X tasks, skipped if you already did them</li>
+            <li class="plus">Hold $100 of $KNTQ on HyperEVM</li>
+            <li class="plus">Invite 7 friends with your link</li>
+            <li class="plus">Post and tag both @ELYSVORA and @Kinetiq_xyz</li>
+            <li>Submit your post link</li>
+          </ul>
+          <div class="fee"><span>Mint fee</span><b>$0.66 in KNTQ</b></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="elysium">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">The network</span>
+        <h2>Built around Kinetiq and Elysium</h2>
+        <p>ELYSVORA starts on HyperEVM, where $KNTQ lives today, and moves to Elysium when its mainnet opens.</p>
+      </div>
+      <div class="two">
+        <div class="note">
+          <h3>$KNTQ on HyperEVM</h3>
+          <p>$KNTQ is the governance token of Kinetiq, the liquid staking protocol behind kHYPE on Hyperliquid. Soul Pass tasks check your $KNTQ balance, and the mint fee is paid in $KNTQ.</p>
+          <dl>
+            <dt>Network</dt><dd>HyperEVM</dd>
+            <dt>Contract</dt><dd class="mono">0x000000000000780555bD0BCA3791f89f9542c2d6</dd>
+            <dt>Total supply</dt><dd>1,000,000,000 KNTQ</dd>
+          </dl>
+        </div>
+        <div class="note">
+          <h3>Elysium</h3>
+          <p>Elysium is Kinetiq's own network: an Arbitrum Orbit chain that settles to HyperEVM. Gas on Elysium is paid in HYPE, bridged 1:1 from HyperEVM. The ELYSVORA collection mints here.</p>
+          <dl>
+            <dt>Mainnet</dt><dd>November 9, 2026</dd>
+            <dt>Gas token</dt><dd>HYPE</dd>
+            <dt>Settles to</dt><dd>HyperEVM</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="timeline">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Timeline</span>
+        <h2>What happens when</h2>
+      </div>
+      <div class="time">
+        <div class="on"><b>Now</b><h3>Early access opens</h3><p>Create your ELYSVORA profile with your wallet and X account, then start your Soul Pass tasks.</p></div>
+        <div class="on"><b>Now</b><h3>Soul Pass mint on HyperEVM</h3><p>Mint FCFS, GTD or OG as soon as you complete its tasks.</p></div>
+        <div><b>Before Nov 9</b><h3>Holder snapshot</h3><p>Every Soul Pass holder is recorded. The exact time is announced on X.</p></div>
+        <div><b>Nov 9, 2026</b><h3>Elysium mainnet</h3><p>Kinetiq's Elysium network goes live.</p></div>
+        <div><b>After mainnet</b><h3>ELYSVORA mint on Elysium</h3><p>OG mints first, then GTD, then FCFS.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="faq">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">FAQ</span>
+        <h2>Questions</h2>
+      </div>
+      <div class="faq">
+        <details><summary>What is a Soul Pass?</summary><p>A soulbound token (SBT) on HyperEVM. It stays in the wallet that minted it and cannot be sold or transferred. It proves you joined early.</p></details>
+        <details><summary>Can I mint more than one pass?</summary><p>Yes. Each pass has its own tasks, and you can mint every pass you qualify for. Your highest pass decides your access on Elysium.</p></details>
+        <details><summary>How do invites work?</summary><p>After you join, you get your own invite link. A friend counts once they join ELYSVORA through it with their wallet and X account. GTD needs 3 friends and OG needs 7.</p></details>
+        <details><summary>How is the $KNTQ holding checked?</summary><p>The site reads your $KNTQ balance on HyperEVM and its live price when you tap Verify. Keep the balance in the same wallet until the snapshot.</p></details>
+        <details><summary>What does minting cost?</summary><p>$0.66 worth of $KNTQ per pass, plus a small HYPE gas fee on HyperEVM.</p></details>
+        <details><summary>Do I need HYPE for Elysium?</summary><p>Yes. Elysium uses HYPE for gas, bridged 1:1 from HyperEVM.</p></details>
+        <details><summary>Is ELYSVORA part of Kinetiq?</summary><p>No. ELYSVORA is an independent community project built for the Kinetiq and Elysium ecosystem. It is not run or endorsed by Kinetiq.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<main id="app" class="app" hidden>
+  <div class="wrap">
+    <aside class="rail">
+      <div class="profile">
+        <div class="ava" id="ava">E</div>
+        <h2 id="pName">@name</h2>
+        <div class="handle" id="pHandle">ELYSVORA member</div>
+        <div class="kv">
+          <div><span>Wallet</span><b class="mono" id="pWallet">0x0000...0000</b></div>
+          <div><span>$KNTQ balance</span><b class="mono" id="pBal">0</b></div>
+          <div><span>Value</span><b class="mono" id="pUsd">$0.00</b></div>
+          <div><span>KNTQ price</span><b class="mono" id="pPrice">$0.00</b></div>
+          <div><span>Passes</span><b id="pPasses">0 of 3</b></div>
+        </div>
+        <button class="btn ghost small" id="logout" type="button" style="margin-top:18px;width:100%">Disconnect</button>
+      </div>
+      <div class="invite">
+        <span class="eyebrow">Your invite link</span>
+        <div class="ilink"><code class="mono" id="refLink">elysvora.xyz/?ref=</code><button class="btn ghost small" id="copyRef" type="button">Copy</button></div>
+        <div class="istats"><div><b class="mono" id="refCount">0</b><span>friends joined</span></div><div><b class="mono" id="refNext">3</b><span id="refNextLbl">more for GTD</span></div></div>
+      </div>
+      <div class="snap">
+        <span class="eyebrow">Elysium mainnet</span>
+        <div class="big mono" id="snapDays">--</div>
+        <p>Holders are snapshotted before mainnet on November 9, 2026. Your highest pass decides your ELYSVORA mint.</p>
+      </div>
+      <div class="democ" id="democ">
+        <h3>Demo controls</h3>
+        <label for="balRange">Simulated $KNTQ balance
+          <input id="balRange" type="range" min="0" max="600" step="1" value="40">
+        </label>
+        <div class="row"><span class="mono" id="balTxt">40 KNTQ</span><span class="mono" id="balUsd">$13.20</span></div>
+        <button class="btn ghost small" id="addFriend" type="button">Simulate a friend joining</button>
+        <button class="btn ghost small" id="resetDemo" type="button">Reset demo</button>
+      </div>
+    </aside>
+
+    <div class="passes">
+      <div class="welcome">
+        <span class="eyebrow">Your Soul Passes</span>
+        <h1 id="hello">Welcome</h1>
+        <p id="helloSub">Complete a pass's tasks to unlock its mint. X tasks you finish once count for every pass.</p>
+      </div>
+      <div id="passList"></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>ELYSVORA is an independent community project. It is not affiliated with or endorsed by Kinetiq.</span>
+    <span>Demo build. Wallet, X login and minting are simulated.</span>
+  </div>
+</footer>
+
+<div class="gate" id="gate" hidden>
+  <div class="gate-card" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+    <button class="gate-close" id="gateClose" type="button" aria-label="Close">×</button>
+    <div class="gate-steps"><div id="gs1"></div><div id="gs2"></div><div id="gs3"></div></div>
+    <div id="gateBody"></div>
+    <p class="msg" id="gateMsg" role="alert"></p>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-card" role="dialog" aria-modal="true">
+    <canvas id="sheetSigil" width="320" height="320"></canvas>
+    <h3 id="sheetTitle">Mint Soul Pass</h3>
+    <p id="sheetText"></p>
+    <ul class="steps" id="sheetSteps"></ul>
+    <div style="margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap" id="sheetActs"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function () {
+  const CONFIG = {
+    demo: true,
+    xHandle: "ELYSVORA",
+    partnerHandle: "Kinetiq_xyz",
+    pinnedPost: "https://x.com/ELYSVORA",
+    kntq: "0x000000000000780555bD0BCA3791f89f9542c2d6",
+    demoPrice: 0.33,
+    feeUsd: 0.66,
+    mainnet: "2026-11-09T00:00:00Z",
+    chainId: 999,
+    chainName: "HyperEVM",
+    rpc: "https://rpc.hyperliquid.xyz/evm",
+    explorer: "https://hyperevmscan.io"
+  };
+  const COLORS = { fcfs: "#8ff0d0", gtd: "#b9c8ff", og: "#f2c879" };
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => Array.from(document.querySelectorAll(s));
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const KEY = "elysvora_demo_v1";
+
+  function load() { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { return null; } }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  const fresh = () => ({ wallet: "", walletName: "", sig: "", x: "", bal: 40, x_tasks: {}, opened: {}, hold: {}, posts: {}, postOk: {}, minted: {}, refCode: "", refs: 0, invitedBy: "" });
+  let S = Object.assign(fresh(), load() || {});
+  const qref = (function () { try { return (new URLSearchParams(location.search).get("ref") || "").trim().toUpperCase(); } catch (e) { return ""; } })();
+  if (/^[A-Z0-9]{6,10}$/.test(qref) && !S.x && qref !== S.refCode) { S.invitedBy = qref; save(); }
+  const siteBase = /^https?:/.test(location.origin) && !/claude|usercontent/.test(location.host) ? location.origin + location.pathname.replace(/index\.html$/, "") : "https://elysvora.xyz/";
+
+  function toast(t) {
+    const el = $("#toast");
+    el.textContent = t;
+    el.hidden = false;
+    clearTimeout(toast.t);
+    toast.t = setTimeout(() => { el.hidden = true; }, 2200);
+  }
+  const short = (a) => a ? a.slice(0, 6) + "..." + a.slice(-4) : "";
+  const usd = (n) => "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const num = (n, d) => Number(n).toLocaleString("en-US", { maximumFractionDigits: d === undefined ? 2 : d });
+  const price = () => CONFIG.demoPrice;
+  const feeKntq = () => CONFIG.feeUsd / price();
+
+  function sigil(canvas, tier, t) {
+    const ctx = canvas.getContext("2d");
+    const W = canvas.width, c = W / 2;
+    const col = COLORS[tier] || COLORS.fcfs;
+    ctx.clearRect(0, 0, W, W);
+    ctx.save();
+    ctx.translate(c, c);
+    const g = ctx.createRadialGradient(0, 0, W * 0.05, 0, 0, W * 0.5);
+    g.addColorStop(0, col + "55");
+    g.addColorStop(1, col + "00");
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(0, 0, W * 0.5, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = col;
+    ctx.lineWidth = Math.max(1, W / 140);
+    ctx.globalAlpha = 0.9;
+    ctx.beginPath(); ctx.arc(0, 0, W * 0.44, 0, Math.PI * 2); ctx.stroke();
+    ctx.globalAlpha = 0.5;
+    ctx.beginPath(); ctx.arc(0, 0, W * 0.38, 0, Math.PI * 2); ctx.stroke();
+    ctx.save();
+    ctx.rotate(t * 0.15);
+    const ticks = tier === "og" ? 36 : tier === "gtd" ? 24 : 12;
+    for (let i = 0; i < ticks; i++) {
+      ctx.rotate((Math.PI * 2) / ticks);
+      ctx.globalAlpha = i % 3 === 0 ? 0.95 : 0.45;
+      ctx.beginPath(); ctx.moveTo(W * 0.385, 0); ctx.lineTo(W * (i % 3 === 0 ? 0.44 : 0.415), 0); ctx.stroke();
+    }
+    ctx.restore();
+    ctx.save();
+    ctx.rotate(-t * 0.25);
+    ctx.globalAlpha = 1;
+    ctx.lineWidth = Math.max(1.2, W / 90);
+    const sides = tier === "og" ? 8 : tier === "gtd" ? 4 : 3;
+    const R = W * 0.27;
+    ctx.beginPath();
+    if (tier === "og") {
+      for (let i = 0; i <= 16; i++) { const a = (i / 16) * Math.PI * 2 - Math.PI / 2; const r = i % 2 ? R * 0.48 : R; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
+    } else {
+      for (let i = 0; i <= sides; i++) { const a = (i / sides) * Math.PI * 2 - Math.PI / 2; ctx.lineTo(Math.cos(a) * R, Math.sin(a) * R); }
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 0.5;
+    ctx.beginPath(); ctx.arc(0, 0, R * 0.32, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = col;
+    ctx.beginPath(); ctx.arc(0, 0, W * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function drawStatic() {
+    sigil($("#markSigil"), "fcfs", 0.6);
+    $$("canvas[data-sigil]").forEach((c) => sigil(c, c.dataset.sigil, 0.4));
+  }
+
+  const sky = $("#sky"), orb = $("#orb");
+  const motes = Array.from({ length: 70 }, () => ({ x: Math.random(), y: Math.random(), s: 0.4 + Math.random() * 1.6, v: 0.02 + Math.random() * 0.05, a: Math.random() }));
+  function sizeSky() { const r = sky.getBoundingClientRect(); const d = Math.min(2, window.devicePixelRatio || 1); sky.width = Math.max(1, r.width * d); sky.height = Math.max(1, r.height * d); }
+  function frame(ts) {
+    const t = (ts || 0) / 1000;
+    const ctx = sky.getContext("2d");
+    const W = sky.width, H = sky.height;
+    ctx.clearRect(0, 0, W, H);
+    const g = ctx.createRadialGradient(W * 0.72, H * 0.45, 0, W * 0.72, H * 0.45, Math.max(W, H) * 0.7);
+    g.addColorStop(0, "rgba(143,240,208,0.13)");
+    g.addColorStop(0.5, "rgba(185,200,255,0.05)");
+    g.addColorStop(1, "rgba(4,21,26,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+    motes.forEach((m) => {
+      const y = ((m.y - t * m.v * 0.12) % 1 + 1) % 1;
+      const tw = 0.4 + 0.6 * Math.abs(Math.sin(t * 0.8 + m.a * 6));
+      ctx.fillStyle = "rgba(200,255,236," + (0.15 + 0.5 * tw * (1 - y)) + ")";
+      ctx.beginPath(); ctx.arc(m.x * W, y * H, m.s * (W / 900 + 0.6), 0, Math.PI * 2); ctx.fill();
+    });
+    drawOrb(t);
+    if (!reduce && !$("#landing").hidden) requestAnimationFrame(frame);
+  }
+  function drawOrb(t) {
+    const ctx = orb.getContext("2d");
+    const W = orb.width, c = W / 2;
+    ctx.clearRect(0, 0, W, W);
+    ctx.save();
+    ctx.translate(c, c);
+    const halo = ctx.createRadialGradient(0, 0, W * 0.05, 0, 0, W * 0.5);
+    halo.addColorStop(0, "rgba(143,240,208,0.28)");
+    halo.addColorStop(0.55, "rgba(143,240,208,0.06)");
+    halo.addColorStop(1, "rgba(143,240,208,0)");
+    ctx.fillStyle = halo;
+    ctx.beginPath(); ctx.arc(0, 0, W * 0.5, 0, Math.PI * 2); ctx.fill();
+    const rings = [[0.46, 72, 0.06, COLORS.fcfs], [0.38, 48, -0.1, COLORS.gtd], [0.30, 36, 0.16, COLORS.og]];
+    rings.forEach(([r, n, sp, col], k) => {
+      ctx.save();
+      ctx.rotate(t * sp);
+      ctx.strokeStyle = col;
+      ctx.globalAlpha = 0.85;
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(0, 0, W * r, 0, Math.PI * 2); ctx.stroke();
+      for (let i = 0; i < n; i++) {
+        ctx.rotate((Math.PI * 2) / n);
+        ctx.globalAlpha = i % 6 === 0 ? 0.9 : 0.35;
+        ctx.beginPath(); ctx.moveTo(W * (r - 0.012), 0); ctx.lineTo(W * (r + (i % 6 === 0 ? 0.03 : 0.012)), 0); ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = col;
+      ctx.beginPath(); ctx.arc(W * r, 0, 7 + k * 1.5, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    });
+    ctx.save();
+    ctx.rotate(-t * 0.2);
+    ctx.strokeStyle = "#dcefe8";
+    ctx.globalAlpha = 0.7;
+    ctx.lineWidth = 2;
+    const R = W * 0.2;
+    for (let s = 0; s < 2; s++) {
+      ctx.beginPath();
+      for (let i = 0; i <= 3; i++) { const a = (i / 3) * Math.PI * 2 + s * Math.PI; ctx.lineTo(Math.cos(a) * R, Math.sin(a) * R); }
+      ctx.stroke();
+    }
+    ctx.restore();
+    const core = ctx.createRadialGradient(0, 0, 0, 0, 0, W * 0.09);
+    core.addColorStop(0, "rgba(230,255,247,1)");
+    core.addColorStop(1, "rgba(143,240,208,0)");
+    ctx.fillStyle = core;
+    ctx.beginPath(); ctx.arc(0, 0, W * 0.09 * (1 + 0.06 * Math.sin(t * 1.6)), 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  const PASSES = [
+    { id: "fcfs", name: "FCFS", sub: "First come, first served", hold: 0, post: 0, refs: 0 },
+    { id: "gtd", name: "GTD", sub: "Guaranteed", hold: 30, post: 1, refs: 3 },
+    { id: "og", name: "OG", sub: "The first circle", hold: 100, post: 2, refs: 7 }
+  ];
+  const XTASKS = [
+    { id: "follow", label: "Follow @ELYSVORA on X", hint: "Opens our X profile", url: () => "https://x.com/" + CONFIG.xHandle },
+    { id: "like", label: "Like the pinned post", hint: "Opens the pinned post", url: () => CONFIG.pinnedPost },
+    { id: "repost", label: "Repost the pinned post", hint: "Opens the pinned post", url: () => CONFIG.pinnedPost },
+    { id: "comment", label: "Comment on the pinned post", hint: "Opens the pinned post", url: () => CONFIG.pinnedPost }
+  ];
+
+  function tags(pass) { return pass.post === 2 ? ["@" + CONFIG.xHandle, "@" + CONFIG.partnerHandle] : ["@" + CONFIG.xHandle]; }
+  function postText(pass) {
+    const t = tags(pass).join(" ");
+    return "I am claiming my ELYSVORA " + pass.name + " Soul Pass on HyperEVM. The soulbound key to Elysium. " + t;
+  }
+  const xAllDone = () => XTASKS.every((x) => S.x_tasks[x.id]);
+  function items(pass) {
+    const list = pass.id === "fcfs" || !xAllDone() ? XTASKS.map((x) => ({ kind: "x", id: x.id, done: !!S.x_tasks[x.id] })) : [];
+    if (pass.hold) list.push({ kind: "hold", id: "hold", done: !!S.hold[pass.id] });
+    if (pass.refs) list.push({ kind: "ref", id: "ref", done: S.refs >= pass.refs });
+    if (pass.post) list.push({ kind: "post", id: "post", done: !!S.postOk[pass.id] });
+    return list;
+  }
+  function stateOf(pass) {
+    if (S.minted[pass.id]) return "minted";
+    const it = items(pass);
+    return it.every((i) => i.done) ? "ready" : "open";
+  }
+
+  function renderApp() {
+    $("#pName").textContent = "@" + S.x;
+    $("#hello").textContent = "Welcome, @" + S.x;
+    $("#ava").textContent = (S.x || "E").charAt(0).toUpperCase();
+    $("#pHandle").textContent = "ELYSVORA member · " + (S.walletName || "Wallet");
+    $("#pWallet").textContent = short(S.wallet);
+    $("#pBal").textContent = num(S.bal) + " KNTQ";
+    $("#pUsd").textContent = usd(S.bal * price());
+    $("#pPrice").textContent = "$" + price().toFixed(4);
+    $("#balRange").value = S.bal;
+    $("#balTxt").textContent = num(S.bal, 0) + " KNTQ";
+    $("#balUsd").textContent = usd(S.bal * price());
+    if (!S.refCode) { S.refCode = refFor(S.wallet); save(); }
+    const link = siteBase + "?ref=" + S.refCode;
+    $("#refLink").textContent = link.replace(/^https?:\/\//, "");
+    $("#refCount").textContent = S.refs;
+    const nextNeed = S.refs < 3 ? 3 : 7;
+    $("#refNext").textContent = Math.max(0, nextNeed - S.refs);
+    $("#refNextLbl").textContent = S.refs >= 7 ? "all invites done" : "more for " + (S.refs < 3 ? "GTD" : "OG");
+    const mintedN = PASSES.filter((p) => S.minted[p.id]).length;
+    $("#pPasses").textContent = mintedN + " of 3";
+    const box = $("#passList");
+    box.innerHTML = "";
+    box.style.display = "grid";
+    box.style.gap = "18px";
+    PASSES.forEach((p) => box.appendChild(passCard(p)));
+  }
+
+  function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
+
+  function passCard(p) {
+    const st = stateOf(p);
+    const card = el("article", "pass " + p.id + (st === "minted" ? " is-minted" : ""));
+    const head = el("div", "pass-head");
+    const cv = document.createElement("canvas");
+    cv.width = 152; cv.height = 152;
+    sigil(cv, p.id, 0.4);
+    head.appendChild(cv);
+    const tx = el("div");
+    tx.appendChild(el("h3", "", p.name + " Soul Pass"));
+    tx.appendChild(el("p", "", p.sub + (p.hold ? " · hold $" + p.hold + " of KNTQ" : " · open to everyone")));
+    head.appendChild(tx);
+    head.appendChild(el("span", "chip " + (st === "minted" ? "minted" : st === "ready" ? "ready" : ""), st === "minted" ? "Minted" : st === "ready" ? "Ready to mint" : "In progress"));
+    card.appendChild(head);
+    const it = items(p);
+    const doneN = it.filter((i) => i.done).length;
+    const prog = el("div", "prog");
+    const bar = el("i");
+    bar.style.width = Math.round((doneN / it.length) * 100) + "%";
+    prog.appendChild(bar);
+    card.appendChild(prog);
+    const ul = el("ul", "tasks");
+    if (p.id !== "fcfs" && xAllDone()) ul.appendChild(el("li", "xdone", "X tasks already done in FCFS. Nothing to repeat here."));
+    it.forEach((i) => ul.appendChild(taskRow(p, i)));
+    card.appendChild(ul);
+    const foot = el("div", "pass-foot");
+    foot.appendChild(el("span", "fee", "Mint fee <b>" + usd(CONFIG.feeUsd) + "</b> ≈ <b class=\"mono\">" + num(feeKntq(), 2) + " KNTQ</b> + HYPE gas"));
+    const mb = el("button", "btn " + (p.id === "og" ? "gold" : p.id === "gtd" ? "pearl" : "primary"), "Mint " + p.name + " Soul Pass");
+    mb.type = "button";
+    mb.disabled = st !== "ready";
+    mb.addEventListener("click", () => mint(p));
+    foot.appendChild(mb);
+    card.appendChild(foot);
+    const mbox = el("div", "minted-box", S.minted[p.id] ? "Soulbound to <b class=\"mono\">" + short(S.wallet) + "</b> · tx <span class=\"mono\">" + short(S.minted[p.id]) + "</span>. You are in the snapshot." : "");
+    card.appendChild(mbox);
+    return card;
+  }
+
+  function taskRow(p, i) {
+    const li = el("li", "task" + (i.done ? " done" : ""));
+    li.appendChild(el("span", "tick"));
+    const mid = el("div");
+    const acts = el("div", "acts");
+    if (i.kind === "x") {
+      const x = XTASKS.find((t) => t.id === i.id);
+      mid.appendChild(el("div", "t1", x.label));
+      mid.appendChild(el("div", "t2", i.done ? "Verified · counts for every pass" : x.hint));
+      if (!i.done) {
+        const a = el("a", "btn ghost small", "Open X");
+        a.href = x.url();
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.addEventListener("click", () => { S.opened[i.id] = true; save(); setTimeout(renderApp, 400); });
+        acts.appendChild(a);
+        const v = el("button", "btn ghost small", "Verify");
+        v.type = "button";
+        v.disabled = !S.opened[i.id];
+        v.addEventListener("click", async () => { v.innerHTML = "<span class=\"spin\"></span>"; v.disabled = true; await sleep(1200); S.x_tasks[i.id] = true; save(); toast("Verified"); renderApp(); });
+        acts.appendChild(v);
+      }
+    } else if (i.kind === "hold") {
+      const need = p.hold;
+      const have = S.bal * price();
+      mid.appendChild(el("div", "t1", "Hold $" + need + " of $KNTQ on HyperEVM"));
+      const t2 = el("div", "t2", i.done ? "Verified at " + usd(have) : "You hold " + usd(have) + " · need " + usd(need) + " ≈ " + num(need / price(), 0) + " KNTQ");
+      mid.appendChild(t2);
+      if (!i.done) {
+        const v = el("button", "btn ghost small", "Verify");
+        v.type = "button";
+        v.addEventListener("click", async () => {
+          v.innerHTML = "<span class=\"spin\"></span>";
+          v.disabled = true;
+          await sleep(1200);
+          if (S.bal * price() >= need) { S.hold[p.id] = true; save(); toast("Holding verified"); renderApp(); }
+          else { t2.textContent = "Not enough. You hold " + usd(S.bal * price()) + ", you need " + usd(need) + "."; t2.classList.add("bad"); v.textContent = "Verify"; v.disabled = false; }
+        });
+        acts.appendChild(v);
+      }
+    } else if (i.kind === "ref") {
+      mid.appendChild(el("div", "t1", "Invite " + p.refs + " friends"));
+      mid.appendChild(el("div", "t2", i.done ? "Done · " + S.refs + " friends joined" : Math.min(S.refs, p.refs) + " of " + p.refs + " joined with your link"));
+      if (!i.done) {
+        const c = el("button", "btn ghost small", "Copy invite link");
+        c.type = "button";
+        c.addEventListener("click", copyRef);
+        acts.appendChild(c);
+      }
+    } else {
+      const tg = tags(p).join(" and ");
+      mid.appendChild(el("div", "t1", "Post on X and tag " + tg));
+      mid.appendChild(el("div", "t2", i.done ? "Post verified" : "Write the post, then paste its link here"));
+      if (!i.done) {
+        const a = el("a", "btn ghost small", "Write post");
+        a.href = "https://x.com/intent/post?text=" + encodeURIComponent(postText(p));
+        a.target = "_blank";
+        a.rel = "noopener";
+        acts.appendChild(a);
+        li.appendChild(mid);
+        li.appendChild(acts);
+        const row = el("div", "postrow");
+        const inp = document.createElement("input");
+        inp.id = "post-" + p.id;
+        inp.type = "url";
+        inp.placeholder = "https://x.com/" + S.x + "/status/...";
+        inp.value = S.posts[p.id] || "";
+        inp.setAttribute("aria-label", "Post link for " + p.name);
+        const sub = el("button", "btn ghost small", "Submit");
+        sub.type = "button";
+        sub.addEventListener("click", async () => {
+          const v = inp.value.trim();
+          const m = v.match(/^https?:\/\/(?:www\.|mobile\.)?(?:x|twitter)\.com\/([A-Za-z0-9_]{1,15})\/status\/(\d{5,25})/i);
+          const t2 = mid.querySelector(".t2");
+          t2.classList.add("bad");
+          if (!m) { t2.textContent = "Paste a post link like https://x.com/" + S.x + "/status/123..."; return; }
+          if (m[1].toLowerCase() !== S.x.toLowerCase()) { t2.textContent = "The post must be from @" + S.x + ", the account you connected."; return; }
+          sub.innerHTML = "<span class=\"spin\"></span>";
+          sub.disabled = true;
+          await sleep(1400);
+          S.posts[p.id] = v;
+          S.postOk[p.id] = true;
+          save();
+          toast("Post verified");
+          renderApp();
+        });
+        row.appendChild(inp);
+        row.appendChild(sub);
+        li.appendChild(row);
+        return li;
+      }
+    }
+    li.appendChild(mid);
+    li.appendChild(acts);
+    return li;
+  }
+
+  function refFor(w) {
+    let h = 2166136261 >>> 0;
+    const str = String(w || Math.random()).toLowerCase();
+    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+    return h.toString(36).toUpperCase().padStart(7, "0").slice(0, 7);
+  }
+  async function copyRef() {
+    const link = siteBase + "?ref=" + S.refCode;
+    try { await navigator.clipboard.writeText(link); toast("Invite link copied"); } catch (e) { toast(link); }
+  }
+  let sheetAnim = 0;
+  function spinSheet(tier) {
+    cancelAnimationFrame(sheetAnim);
+    const c = $("#sheetSigil");
+    const loop = (ts) => { sigil(c, tier, (ts || 0) / 1000); if (!$("#sheet").hidden && !reduce) sheetAnim = requestAnimationFrame(loop); };
+    loop(0);
+  }
+  async function mint(p) {
+    const fee = feeKntq();
+    if (S.bal < fee) { toast("You need " + num(fee) + " KNTQ for the mint fee."); return; }
+    $("#sheet").hidden = false;
+    spinSheet(p.id);
+    $("#sheetTitle").textContent = "Mint " + p.name + " Soul Pass";
+    $("#sheetText").textContent = "Fee " + usd(CONFIG.feeUsd) + " = " + num(fee) + " KNTQ on HyperEVM.";
+    const steps = $("#sheetSteps");
+    steps.innerHTML = "";
+    const rows = ["Approve " + num(fee) + " KNTQ", "Confirm the mint", "Soul Pass bound to your wallet"].map((t) => { const li = el("li", "", "<span class=\"ic\">○</span>" + t); steps.appendChild(li); return li; });
+    const acts = $("#sheetActs");
+    acts.innerHTML = "";
+    for (let k = 0; k < rows.length; k++) {
+      rows[k].classList.add("on");
+      rows[k].querySelector(".ic").innerHTML = "<span class=\"spin\"></span>";
+      await sleep(k === 2 ? 900 : 1300);
+      rows[k].classList.remove("on");
+      rows[k].classList.add("ok");
+      rows[k].querySelector(".ic").textContent = "✓";
+    }
+    const hash = "0x" + Array.from({ length: 64 }, () => "0123456789abcdef"[Math.floor(Math.random() * 16)]).join("");
+    S.bal = Math.max(0, +(S.bal - fee).toFixed(4));
+    S.minted[p.id] = hash;
+    save();
+    $("#sheetTitle").textContent = p.name + " Soul Pass minted";
+    $("#sheetText").textContent = "Soulbound to " + short(S.wallet) + ". You are in the holder snapshot for Elysium.";
+    const share = el("a", "btn primary small", "Share on X");
+    share.href = "https://x.com/intent/post?text=" + encodeURIComponent("I just minted my ELYSVORA " + p.name + " Soul Pass on HyperEVM. Next stop: Elysium. @" + CONFIG.xHandle);
+    share.target = "_blank";
+    share.rel = "noopener";
+    const close = el("button", "btn ghost small", "Done");
+    close.type = "button";
+    close.addEventListener("click", () => { $("#sheet").hidden = true; renderApp(); });
+    acts.appendChild(share);
+    acts.appendChild(close);
+  }
+
+  const W = { providers: [], p: null };
+  window.addEventListener("eip6963:announceProvider", (e) => {
+    const d = e.detail;
+    if (d && d.info && d.provider && !W.providers.some((q) => q.info.uuid === d.info.uuid)) W.providers.push(d);
+  });
+  window.dispatchEvent(new Event("eip6963:requestProvider"));
+  const mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  function legacy() {
+    const out = [];
+    const seen = new Set(W.providers.map((d) => d.provider));
+    const add = (p, name, rdns) => { if (p && p.request && !seen.has(p)) { seen.add(p); out.push({ info: { name, rdns, icon: "" }, provider: p }); } };
+    add(window.bitkeep && window.bitkeep.ethereum, "Bitget Wallet", "com.bitget.web3");
+    add(window.okxwallet, "OKX Wallet", "com.okex.wallet");
+    const eth = window.ethereum;
+    if (eth) add(eth, eth.isBitKeep ? "Bitget Wallet" : eth.isOkxWallet ? "OKX Wallet" : eth.isMetaMask ? "MetaMask" : "Browser Wallet", "injected");
+    return out;
+  }
+  function deepLinks() {
+    const url = location.href, hp = location.host + location.pathname;
+    return [
+      { name: "Bitget Wallet", href: "https://bkcode.vip?action=dapp&url=" + encodeURIComponent(url) },
+      { name: "MetaMask", href: "https://metamask.app.link/dapp/" + hp },
+      { name: "OKX Wallet", href: "okx://wallet/dapp/url?dappUrl=" + encodeURIComponent(url) },
+      { name: "Trust Wallet", href: "https://link.trustwallet.com/open_url?coin_id=60&url=" + encodeURIComponent(url) }
+    ];
+  }
+  const signText = (a) => "Welcome to ELYSVORA.\n\nSign to prove you own this wallet:\n" + a + "\n\nThis is free. It does not send a transaction or give any approval.";
+
+  function gateStep(n) { [1, 2, 3].forEach((i) => $("#gs" + i).classList.toggle("on", i <= n)); $("#gateMsg").textContent = ""; }
+  function openGate() {
+    $("#gate").hidden = false;
+    if (!S.wallet) stepWallet();
+    else if (!S.sig) stepSign();
+    else if (!S.x) stepX();
+    else enterApp();
+  }
+  $("#gateClose").addEventListener("click", () => { $("#gate").hidden = true; });
+
+  function stepWallet() {
+    gateStep(1);
+    window.dispatchEvent(new Event("eip6963:requestProvider"));
+    const b = $("#gateBody");
+    b.innerHTML = "<span class=\"eyebrow\">Step 1 of 3</span><h2 id=\"gateTitle\">Connect your wallet</h2><p>Use the wallet that holds your $KNTQ on HyperEVM.</p>" + (S.invitedBy ? "<p class=\"invited-note\">You were invited by a friend. Joining counts toward their pass.</p>" : "");
+    const list = el("div", "wlist");
+    setTimeout(() => {
+      const provs = W.providers.concat(legacy());
+      provs.forEach((d) => {
+        const o = el("button", "wopt");
+        o.type = "button";
+        o.innerHTML = (d.info.icon ? "<img alt=\"\" src=\"" + d.info.icon + "\">" : "<i>" + d.info.name.charAt(0) + "</i>") + "<span></span><small>Detected</small>";
+        o.querySelector("span").textContent = d.info.name;
+        o.addEventListener("click", () => realConnect(d));
+        list.appendChild(o);
+      });
+      if (mobile) deepLinks().forEach((d) => { const a = el("a", "wopt", "<i>" + d.name.charAt(0) + "</i><span>" + d.name + "</span><small>Open app</small>"); a.href = d.href; list.appendChild(a); });
+      if (CONFIG.demo) {
+        const o = el("button", "wopt", "<i>D</i><span>Demo wallet</span><small>Preview only</small>");
+        o.type = "button";
+        o.addEventListener("click", demoConnect);
+        list.appendChild(o);
+      }
+      if (!list.children.length) list.appendChild(el("p", "hint", "No wallet found. Open this page inside your wallet app."));
+    }, 200);
+    b.appendChild(list);
+    b.appendChild(el("p", "hint", "Next you sign one free message. It never moves your funds."));
+  }
+  async function realConnect(d) {
+    try {
+      W.p = d.provider;
+      const acc = await d.provider.request({ method: "eth_requestAccounts" });
+      if (!acc || !acc[0]) throw new Error("No account");
+      S.wallet = acc[0].toLowerCase();
+      S.walletName = d.info.name;
+      save();
+      stepSign();
+    } catch (e) {
+      $("#gateMsg").textContent = /reject|denied|cancel/i.test(String(e && e.message)) ? "You cancelled the request." : "Could not connect. Please try again.";
+    }
+  }
+  function demoConnect() {
+    S.wallet = "0x" + Array.from({ length: 40 }, () => "0123456789abcdef"[Math.floor(Math.random() * 16)]).join("");
+    S.walletName = "Demo wallet";
+    save();
+    stepSign();
+  }
+  function stepSign() {
+    gateStep(2);
+    const b = $("#gateBody");
+    b.innerHTML = "<span class=\"eyebrow\">Step 2 of 3</span><h2 id=\"gateTitle\">Prove it is yours</h2><p>Sign one message. It is free and cannot move funds.</p>";
+    b.appendChild(el("div", "sigbox", ""));
+    b.querySelector(".sigbox").textContent = signText(S.wallet);
+    const btn = el("button", "btn primary", "Sign message");
+    btn.type = "button";
+    btn.style.marginTop = "18px";
+    btn.style.width = "100%";
+    btn.addEventListener("click", async () => {
+      btn.innerHTML = "<span class=\"spin\"></span> Waiting for wallet";
+      btn.disabled = true;
+      try {
+        if (W.p && S.walletName !== "Demo wallet") {
+          const hex = "0x" + Array.from(new TextEncoder().encode(signText(S.wallet)), (x) => x.toString(16).padStart(2, "0")).join("");
+          S.sig = await W.p.request({ method: "personal_sign", params: [hex, S.wallet] });
+        } else {
+          await sleep(1100);
+          S.sig = "0xdemo";
+        }
+        save();
+        stepX();
+      } catch (e) {
+        btn.textContent = "Sign message";
+        btn.disabled = false;
+        $("#gateMsg").textContent = "The message was not signed. Please try again.";
+      }
+    });
+    b.appendChild(btn);
+  }
+  function stepX() {
+    gateStep(3);
+    const b = $("#gateBody");
+    b.innerHTML = "<span class=\"eyebrow\">Step 3 of 3</span><h2 id=\"gateTitle\">Connect your X account</h2><p>Your X username becomes your ELYSVORA profile name." + (CONFIG.demo ? " <span class=\"demo-tag\">Demo sign-in</span>" : "") + "</p>";
+    const x = el("div", "xauth");
+    x.innerHTML = "<div class=\"bar\"><b>𝕏</b> Authorize app</div><div class=\"body\"><p>ELYSVORA wants to read your profile name and username. It cannot post for you.</p><label for=\"xUser\">Username<div class=\"in\"><b>@</b><input id=\"xUser\" autocomplete=\"off\" spellcheck=\"false\" maxlength=\"15\" placeholder=\"yourname\"></div></label><button class=\"btn\" id=\"xAuth\" type=\"button\">Authorize app</button></div>";
+    b.appendChild(x);
+    $("#xAuth").addEventListener("click", async () => {
+      const v = $("#xUser").value.trim().replace(/^@/, "");
+      if (!/^[A-Za-z0-9_]{1,15}$/.test(v)) { $("#gateMsg").textContent = "Enter a valid X username: letters, numbers and _ only."; return; }
+      const btn = $("#xAuth");
+      btn.innerHTML = "<span class=\"spin\"></span>";
+      btn.disabled = true;
+      await sleep(1000);
+      S.x = v;
+      save();
+      enterApp();
+    });
+    $("#xUser").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#xAuth").click(); });
+    setTimeout(() => { const i = $("#xUser"); if (i) i.focus(); }, 50);
+  }
+
+  function enterApp() {
+    $("#gate").hidden = true;
+    $("#landing").hidden = true;
+    $("#app").hidden = false;
+    $("#nav").style.visibility = "hidden";
+    $("#topCta").textContent = "@" + S.x;
+    renderApp();
+    window.scrollTo(0, 0);
+  }
+  function leaveApp() {
+    $("#app").hidden = true;
+    $("#landing").hidden = false;
+    $("#nav").style.visibility = "";
+    $("#topCta").textContent = "Get early access";
+    sizeSky();
+    requestAnimationFrame(frame);
+  }
+
+  $("#topCta").addEventListener("click", () => { if (S.wallet && S.sig && S.x) { if ($("#app").hidden) enterApp(); } else openGate(); });
+  $("#heroCta").addEventListener("click", openGate);
+  $("#markLink").addEventListener("click", (e) => { if (!$("#app").hidden) { e.preventDefault(); leaveApp(); window.scrollTo(0, 0); } });
+  $("#logout").addEventListener("click", () => { const keep = S.bal; S = fresh(); S.bal = keep; save(); leaveApp(); toast("Disconnected"); });
+  $("#balRange").addEventListener("input", (e) => { S.bal = Number(e.target.value); save(); $("#balTxt").textContent = num(S.bal, 0) + " KNTQ"; $("#balUsd").textContent = usd(S.bal * price()); $("#pBal").textContent = num(S.bal) + " KNTQ"; $("#pUsd").textContent = usd(S.bal * price()); });
+  $("#balRange").addEventListener("change", renderApp);
+  $("#resetDemo").addEventListener("click", () => { const w = { wallet: S.wallet, walletName: S.walletName, sig: S.sig, x: S.x, refCode: S.refCode }; S = Object.assign(fresh(), w); save(); renderApp(); toast("Demo reset"); });
+  $("#addFriend").addEventListener("click", () => { S.refs += 1; save(); renderApp(); toast("A friend joined with your link"); });
+  $("#copyRef").addEventListener("click", copyRef);
+
+  function countdown() {
+    const ms = new Date(CONFIG.mainnet).getTime() - Date.now();
+    const d = Math.max(0, Math.ceil(ms / 86400000));
+    $("#snapDays").textContent = ms > 0 ? d + (d === 1 ? " day" : " days") : "Live";
+  }
+  countdown();
+  setInterval(countdown, 60000);
+
+  drawStatic();
+  sizeSky();
+  window.addEventListener("resize", () => { sizeSky(); if (reduce) frame(0); });
+  if (reduce) frame(0); else requestAnimationFrame(frame);
+  if (S.wallet && S.sig && S.x) $("#topCta").textContent = "@" + S.x;
+})();
+</script>
+</body>
+</html>
